@@ -11,25 +11,29 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASS}
       MYSQL_ROOT_PASSWORD: rootpassword
-    # volumes
-    # Network
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ngekos_network
 
   # --- 2. APP SERVICE ---
   app_service:
-    build: ./app
+    build: .
     container_name: app_${GROUP_NAME}
     restart: always
     expose:
       - "3000"
     environment:
-      - DB_HOST=db_service
+      - DB_HOST=db_service # SERVICE DISCOVERY (Bukan localhost)
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_NAME=${DB_NAME}
       - APP_PORT=3000
     depends_on:
       - db_service
-    # Network
+    networks:
+      - ngekos_network
 
   # --- 3. NGINX SERVICE ---
   nginx_service:
@@ -37,11 +41,18 @@ services:
     container_name: nginx_${GROUP_NAME}
     restart: always
     ports:
-      - "${APP_PORT}:80"
+      - "${APP_PORT}:80" # Port 2585 di server akan diarahkan ke port 80 Nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app_service
-    # Network
-    # volumes
+    networks:
+      - ngekos_network
 
-#--- VOLUMES AND NETWORKS ---
-# tambahkan bagian volumes dan networks di sini
+# --- VOLUMES AND NETWORKS ---
+volumes:
+  db_data: # Inilah yang menjaga agar data TIDAK HILANG (Persistence)
+
+networks:
+  ngekos_network: # Jaringan internal Docker (No Localhost)
+    driver: bridge

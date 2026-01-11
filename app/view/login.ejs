@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Pemilik - Ngekos.Yuk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/dist/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+        }
+        .login-header {
+            background: #0d6efd;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .login-header i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .btn-login {
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        .back-link {
+            text-decoration: none;
+            color: #6c757d;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .back-link:hover {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card bg-white">
+        <div class="login-header">
+            <i class="fas fa-house-user"></i>
+            <h4 class="fw-bold mb-0">Ngekos.Yuk</h4>
+            <small>Panel Pemilik Kos</small>
+        </div>
+
+        <div class="card-body p-4">
+            <p class="text-center text-muted mb-4">Silakan masuk untuk mengelola kamar Anda</p>
+            
+            <form action="/login" method="POST">
+                <div class="mb-3">
+                    <label for="username" class="form-label small fw-bold">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+                        <input type="text" name="username" id="username" class="form-control border-start-0 shadow-none" placeholder="Masukkan username" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label small fw-bold">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                        <input type="password" name="password" id="password" class="form-control border-start-0 shadow-none" placeholder="Masukkan password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-login mb-3">
+                    <i class="fas fa-sign-in-alt me-2"></i> Masuk Sekarang
+                </button>
+                
+                <div class="text-center">
+                    <a href="/" class="back-link">
+                        <i class="fas fa-arrow-left me-1"></i> Kembali ke Beranda
+                    </a>
+                </div>
+            </form>
+        </div>
+        
+        <div class="bg-light p-3 text-center border-top">
+            <small class="text-muted">Lupa password? Hubungi Admin IT.</small>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

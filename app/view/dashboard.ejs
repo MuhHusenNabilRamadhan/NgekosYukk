@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pengelolaan - Ngekos.Yuk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        body { background: #f0f2f5; font-family: 'Poppins', sans-serif; color: #333; }
+        .table-container { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: none; }
+        .badge-tersedia { background-color: #e6fcf5; color: #0ca678; border: 1px solid #c3fae8; }
+        .badge-terisi { background-color: #fff5f5; color: #fa5252; border: 1px solid #ffe3e3; }
+        .header-section { background: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .table thead th { border-top: none; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; color: #888; padding-bottom: 15px; }
+        .btn-add { border-radius: 12px; font-weight: 600; padding: 10px 20px; transition: 0.3s; }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3); }
+        .modal-content { border-radius: 20px; border: none; overflow: hidden; }
+        .form-control, .form-select { border-radius: 10px; padding: 10px 15px; border: 1px solid #eee; }
+        .btn-action { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s; border-radius: 50% !important; }
+    </style>
+</head>
+<body class="container py-5">
+    
+    <div class="header-section d-flex justify-content-between align-items-center shadow-sm">
+        <div>
+            <h2 class="fw-bold mb-1 text-dark text-uppercase" style="letter-spacing: -1px;">Ngekos.Yuk</h2>
+            <p class="text-muted mb-0 small">
+                <i class="fas fa-user-circle me-1"></i> <%= user.nama_pemilik %> | 
+                <i class="fas fa-map-marker-alt me-1 text-danger"></i> <%= user.alamat %>
+            </p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary btn-add shadow-sm" data-bs-toggle="modal" data-bs-target="#addKamarModal">
+                <i class="fas fa-plus-circle me-2"></i>Tambah Kamar
+            </button>
+            <a href="/logout" class="btn btn-danger btn-add shadow-sm" title="Keluar Aplikasi">
+                <i class="fas fa-power-off me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="table-container shadow-sm border">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold m-0 text-dark text-uppercase small">Daftar Pengelolaan Kamar</h5>
+            <span class="badge bg-primary rounded-pill px-3 py-2">Total: <%= kamars.length %> Kamar</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr class="text-center">
+                        <th style="width: 80px;">ID</th>
+                        <th class="text-start">Tipe & Fasilitas</th>
+                        <th>Harga /Bulan</th>
+                        <th>Status</th>
+                        <th>Penyewa</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% if(kamars.length > 0) { %>
+                        <% kamars.forEach(kamar => { %>
+                        <tr class="text-center">
+                            <td class="fw-bold text-muted">#<%= kamar.id_kamar %></td>
+                            <td class="text-start">
+                                <div class="fw-bold text-dark"><%= kamar.jenis_kamar %></div>
+                                <small class="text-muted d-block text-truncate" style="max-width: 250px;"><%= kamar.deskripsi %></small>
+                            </td>
+                            <td><span class="fw-bold text-success">Rp <%= kamar.harga.toLocaleString('id-ID') %></span></td>
+                            <td>
+                                <span class="badge rounded-pill px-3 py-2 <%= kamar.status_kamar == 'Tersedia' ? 'badge-tersedia' : 'badge-terisi' %>">
+                                    <%= kamar.status_kamar %>
+                                </span>
+                            </td>
+                            <td>
+                                <% let penyewaAktif = allPenyewa.find(p => p.id_penyewa == kamar.id_penyewa); %>
+                                <% if(kamar.status_kamar === 'Terisi' && penyewaAktif) { %>
+                                    <div class="fw-semibold small"><%= penyewaAktif.nama_penyewa %></div>
+                                    <small class="text-muted small"><%= penyewaAktif.no_hp %></small>
+                                <% } else { %>
+                                    <span class="text-muted small fst-italic">Kosong</span>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <button class="btn btn-outline-primary btn-action" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editModal<%= kamar.id_kamar %>"
+                                            title="Edit">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </button>
+                                    <a href="/delete-kamar/<%= kamar.id_kamar %>" 
+                                       class="btn btn-outline-danger btn-action" 
+                                       onclick="return confirm('Hapus data kamar ini?')"
+                                       title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    <% } else { %>
+                        <tr><td colspan="6" class="text-center py-5 text-muted">Belum ada kamar yang ditambahkan.</td></tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addKamarModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="/add-kamar" method="POST" class="modal-content shadow-lg">
+                <div class="modal-header border-0 bg-primary text-white p-4">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-plus-circle me-2"></i>Tambah Kamar Baru</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="status_kamar" value="Tersedia">
+                    <input type="hidden" name="id_penyewa" value="">
+
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-1">Tipe Kamar</label>
+                        <input type="text" name="jenis_kamar" class="form-control" placeholder="Contoh: VIP, Reguler" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-1">Harga Per Bulan</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">Rp</span>
+                            <input type="number" name="harga" class="form-control" placeholder="1500000" required>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <label class="small fw-bold mb-1">Fasilitas</label>
+                        <textarea name="deskripsi" class="form-control" rows="3" placeholder="AC, Kamar Mandi Dalam, dll..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Simpan Kamar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <% kamars.forEach(kamar => { %>
+    <div class="modal fade" id="editModal<%= kamar.id_kamar %>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="/edit-kamar/<%= kamar.id_kamar %>" method="POST" class="modal-content shadow-lg">
+                <div class="modal-header border-0 bg-dark text-white p-4">
+                    <h5 class="modal-title fw-bold">Update Kamar #<%= kamar.id_kamar %></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-1">Tipe Kamar</label>
+                        <input type="text" name="jenis_kamar" class="form-control" value="<%= kamar.jenis_kamar %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-1">Harga (Rp)</label>
+                        <input type="number" name="harga" class="form-control" value="<%= kamar.harga %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="small fw-bold mb-1">Fasilitas</label>
+                        <textarea name="deskripsi" class="form-control" rows="2"><%= kamar.deskripsi %></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label class="small fw-bold mb-1">Status</label>
+                            <select name="status_kamar" class="form-select" onchange="handleStatusChange(this, '<%= kamar.id_kamar %>')">
+                                <option value="Tersedia" <%= kamar.status_kamar == 'Tersedia' ? 'selected' : '' %>>Tersedia</option>
+                                <option value="Terisi" <%= kamar.status_kamar == 'Terisi' ? 'selected' : '' %>>Terisi</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="small fw-bold mb-1">Penyewa</label>
+                            <select name="id_penyewa" id="penyewa-<%= kamar.id_kamar %>" class="form-select" <%= kamar.status_kamar == 'Tersedia' ? 'disabled' : '' %>>
+                                <option value="">-- Kosong --</option>
+                                <% allPenyewa.forEach(p => { %>
+                                    <option value="<%= p.id_penyewa %>" <%= kamar.id_penyewa == p.id_penyewa ? 'selected' : '' %>>
+                                        <%= p.nama_penyewa %>
+                                    </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <% }) %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // FUNGSI LOGIKA OTOMATIS: Status Tersedia -> Penyewa Kosong & Terkunci
+        function handleStatusChange(selectElement, kamarId) {
+            const penyewaSelect = document.getElementById('penyewa-' + kamarId);
+            if (selectElement.value === 'Tersedia') {
+                penyewaSelect.value = ""; 
+                penyewaSelect.disabled = true;
+            } else {
+                penyewaSelect.disabled = false;
+                penyewaSelect.setAttribute('required', 'required');
+            }
+        }
+    </script>
+</body>
+</html>
