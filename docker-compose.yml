@@ -56,6 +56,6 @@ volumes:
     driver: local
 
 networks:
-  tekser-network:
+  ngekos-network:
     driver: bridge
     name: net_tekser_${GROUP_NAME}
