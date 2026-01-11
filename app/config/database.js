@@ -5,8 +5,7 @@ const pool = mysql.createPool({
     host: process.env.DB_HOST,      // Akan berisi: db_service
     user: process.env.DB_USER,      // Akan berisi: kelase
     password: process.env.DB_PASS,  // Akan berisi: TekserE-2025
-    database: process.env.DB_NAME,  // Akan berisi: ngekos_db
-    port: process.env.DB_PORT || 3306, 
+    database: process.env.DB_NAME,  // Akan berisi: ngekos_db 
     waitForConnections: true,
     connectionLimit: 10
 });
